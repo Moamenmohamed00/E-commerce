@@ -1,0 +1,11 @@
+using ECommerce.Application.Common.Models;
+using MediatR;
+
+namespace ECommerce.Application.Features.Auth.Commands.Register;
+
+public record RegisterCommand(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Password,
+    string PhoneNumber) : IRequest<Result>;

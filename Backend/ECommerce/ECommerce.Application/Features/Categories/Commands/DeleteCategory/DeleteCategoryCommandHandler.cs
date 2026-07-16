@@ -1,0 +1,42 @@
+using ECommerce.Application.Common.Interfaces;
+using ECommerce.Application.Common.Models;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace ECommerce.Application.Features.Categories.Commands.DeleteCategory;
+
+public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Result>
+{
+    private readonly IApplicationDbContext _context;
+
+    public DeleteCategoryCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+    {
+        var category = await _context.Categories
+            .FirstOrDefaultAsync(c => c.Id == request.Id && !c.IsDeleted, cancellationToken);
+
+        if (category == null)
+        {
+            return Result.Failure("Category not found.");
+        }
+
+        var hasSubCategories = await _context.Categories
+            .AnyAsync(c => c.ParentCategoryId == request.Id && !c.IsDeleted, cancellationToken);
+
+        if (hasSubCategories)
+        {
+            return Result.Failure("Cannot delete this category because it contains active subcategories. Please delete or move them first.");
+        }
+
+        category.IsDeleted = true;
+        category.DeletedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+}

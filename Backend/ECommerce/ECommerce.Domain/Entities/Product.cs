@@ -11,7 +11,6 @@ namespace ECommerce.Domain.Entities
         public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
-
         public Category Category { get; set; } = null!;
         public Brand Brand { get; set; } = null!;
         public ICollection<ProductImage> Images { get; set; } = [];
