@@ -1,6 +1,7 @@
 using ECommerce.Application.Common.Interfaces;
 using ECommerce.Application.Common.Models;
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +32,7 @@ public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, R
         }
 
         var hasPurchased = await _context.Orders
-            .Where(o => o.UserId == userId && o.OrderStatus.ToString() == "Delivered") 
+            .Where(o => o.UserId == userId && o.OrderStatus == OrderStatus.Delivered) 
             .SelectMany(o => o.OrderItems) 
             .AnyAsync(oi => oi.ProductVariant.ProductId == request.ProductId, cancellationToken);
 

@@ -45,8 +45,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthToke
             return Result<AuthTokensDto>.Failure("Invalid email or password.");
         }
 
-        var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        var roles = await _identityService.GetUserRolesAsync(user.Id);
+        var accessToken =await _tokenService.GenerateAccessTokenAsync(user,roles,cancellationToken);
+        var refreshToken =await _tokenService.GenerateRefreshTokenAsync(user,cancellationToken);
 
         var refreshTokenEntity = new Domain.Entities.RefreshToken
         {

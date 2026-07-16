@@ -34,7 +34,6 @@ public class UpdateBrandCommandHandler : IRequestHandler<UpdateBrandCommand, Res
 
         brand.Name = request.Name;
         brand.Description = request.Description;
-        brand.LogoUrl = request.LogoUrl;
         brand.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

@@ -6,5 +6,4 @@ namespace ECommerce.Application.Features.Brands.Commands.UpdateBrand;
 public record UpdateBrandCommand(
     int Id, 
     string Name, 
-    string Description, 
-    string LogoUrl) : IRequest<Result>;
+    string Description) : IRequest<Result>;

@@ -27,10 +27,10 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
         var totalOrders = await _context.Orders.CountAsync(cancellationToken);
 
         var pendingOrdersCount = await _context.Orders
-            .CountAsync(o => o.OrderStatus.ToString() == "Pending", cancellationToken);
+            .CountAsync(o => o.OrderStatus == OrderStatus.Pending, cancellationToken);
 
         var totalRevenue = await _context.Orders
-            .Where(o => o.OrderStatus.ToString() != "Cancelled")
+            .Where(o => o.OrderStatus != OrderStatus.Cancelled)
             .SumAsync(o => o.TotalPrice, cancellationToken);
 
         var recentOrders = await _context.Orders

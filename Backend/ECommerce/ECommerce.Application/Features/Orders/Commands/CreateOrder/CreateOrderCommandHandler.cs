@@ -25,6 +25,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
 
         var cartItems = await _context.CartItems
             .Include(c => c.ProductVariant)
+                .ThenInclude(pv => pv.Product)
             .Where(c => c.UserId == userId)
             .ToListAsync(cancellationToken);
 
@@ -63,7 +64,11 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
             {
                 ProductVariantId = item.ProductVariantId,
                 Quantity = item.Quantity,
-                UnitPrice = item.ProductVariant.Price 
+                UnitPrice = item.ProductVariant.Price ,
+                ProductName= item.ProductVariant.Product.Name,
+                Color=item.ProductVariant.Color,
+                Size=item.ProductVariant.Size,
+                TotalPrice=item.Quantity*item.ProductVariant.Price
             };
             
             order.OrderItems.Add(orderItem);

@@ -23,7 +23,6 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Res
         {
             Name = request.Name,
             Description = request.Description,
-            LogoUrl = request.LogoUrl,
             CreatedAt = DateTime.UtcNow
         };
 

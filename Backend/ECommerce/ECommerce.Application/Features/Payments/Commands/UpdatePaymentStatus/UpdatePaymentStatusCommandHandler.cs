@@ -29,7 +29,7 @@ public class UpdatePaymentStatusCommandHandler : IRequestHandler<UpdatePaymentSt
         }
 
 
-        if (payment.PaymentStatus.ToString() == "Paid")
+        if (payment.PaymentStatus == PaymentStatus.Paid)
         {
             return Result.Success(); 
         }

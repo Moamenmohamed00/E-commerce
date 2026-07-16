@@ -30,13 +30,12 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, Res
         if (order == null)
             return Result.Failure("Order not found or you do not have permission to cancel it.");
 
-        var currentStatus = order.OrderStatus.ToString();
-        if (currentStatus == "Shipped" || currentStatus == "Delivered")
+        if (order.OrderStatus == OrderStatus.Ready|| order.OrderStatus == OrderStatus.Delivered)
         {
             return Result.Failure("Order cannot be cancelled because it has already been shipped or delivered.");
         }
         
-        if (currentStatus == "Cancelled")
+        if (order.OrderStatus == OrderStatus.Cancelled)
         {
             return Result.Failure("Order is already cancelled.");
         }

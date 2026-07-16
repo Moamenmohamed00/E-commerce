@@ -12,13 +12,16 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 {
     private readonly IApplicationDbContext _context;
     private readonly ITokenService _tokenService;
+    private readonly IIdentityService _identityService;
 
     public RefreshTokenCommandHandler(
         IApplicationDbContext context, 
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IIdentityService identityService)
     {
         _context = context;
         _tokenService = tokenService;
+        _identityService = identityService;
     }
 
     public async Task<Result<AuthTokensDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -38,7 +41,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         }
 
         var existingRefreshToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken && rt.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken && rt.UserId == userId&& !rt.IsRevoked , cancellationToken);
 
         if (existingRefreshToken == null)
         {
@@ -53,8 +56,9 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
             return Result<AuthTokensDto>.Failure("Refresh token has expired. Please log in again.");
         }
 
-        var newAccessToken = _tokenService.GenerateAccessToken(user);
-        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        var roles = await _identityService.GetUserRolesAsync(user.Id);
+        var newAccessToken =await _tokenService.GenerateAccessTokenAsync(user,roles,cancellationToken);
+        var newRefreshToken =await _tokenService.GenerateRefreshTokenAsync(user,cancellationToken);
 
         _context.RefreshTokens.Remove(existingRefreshToken);
 
