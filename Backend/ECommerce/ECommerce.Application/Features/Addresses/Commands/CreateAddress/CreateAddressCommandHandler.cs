@@ -23,16 +23,26 @@ public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand,
         var userId = _currentUserService.UserId;
         if (userId == null) return Result<int>.Failure("Unauthorized");
 
-        if (request.IsDefault)
+        bool isDefault = request.IsDefault;
+
+        var hasAnyAddress = await _context.Addresses
+            .AnyAsync(a => a.UserId == userId && !a.IsDeleted, cancellationToken);
+            
+        if (!hasAnyAddress)
+        {
+            isDefault = true;
+        }
+
+        if (isDefault && hasAnyAddress)
         {
             var existingDefaultAddresses = await _context.Addresses
-                .Where(a => a.UserId == userId && a.IsDefault)
+                .Where(a => a.UserId == userId && a.IsDefault && !a.IsDeleted)
                 .ToListAsync(cancellationToken);
 
             foreach (var addr in existingDefaultAddresses)
             {
                 addr.IsDefault = false;
-                addr.UpdatedAt = DateTime.UtcNow;
+                addr.UpdatedAt = DateTime.UtcNow; 
             }
         }
 
@@ -44,10 +54,9 @@ public class CreateAddressCommandHandler : IRequestHandler<CreateAddressCommand,
             Street = request.Street,
             Building = request.Building,
             PostalCode = request.PostalCode,
-            IsDefault = request.IsDefault,
+            IsDefault = isDefault,
             CreatedAt = DateTime.UtcNow
         };
-
         _context.Addresses.Add(address);
         await _context.SaveChangesAsync(cancellationToken);
 
