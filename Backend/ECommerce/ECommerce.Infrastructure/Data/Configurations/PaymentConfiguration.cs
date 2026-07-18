@@ -34,5 +34,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .WithOne(o => o.Payment)
             .HasForeignKey<Payment>(p => p.OrderId) 
             .OnDelete(DeleteBehavior.Restrict); 
+
+        builder.HasQueryFilter(p => !p.Order.Address.IsDeleted && !p.Order.User.IsDeleted);
     }
 }

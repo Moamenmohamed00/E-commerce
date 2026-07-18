@@ -19,12 +19,13 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Cascade); 
         builder.HasOne(oi => oi.ProductVariant)
-            .WithMany() 
+            .WithMany(pv => pv.OrderItems) 
             .HasForeignKey(oi => oi.ProductVariantId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(oi => oi.TotalPrice)
             .HasColumnType("decimal(18,2)");
 
+        builder.HasQueryFilter(oi => !oi.ProductVariant.IsDeleted);
     }
 }

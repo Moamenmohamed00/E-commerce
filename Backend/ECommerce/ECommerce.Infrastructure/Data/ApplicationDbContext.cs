@@ -28,7 +28,6 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<int>, i
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Address> Addresses { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

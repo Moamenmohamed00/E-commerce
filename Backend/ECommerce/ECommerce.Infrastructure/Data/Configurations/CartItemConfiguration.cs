@@ -24,8 +24,10 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(ci => ci.ProductVariant)
-            .WithMany() 
+            .WithMany(pv => pv.CartItems) 
             .HasForeignKey(ci => ci.ProductVariantId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(ci => !ci.User.IsDeleted && !ci.ProductVariant.IsDeleted);
     }
 }

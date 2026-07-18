@@ -2,9 +2,9 @@ using Mapster;
 
 namespace ECommerce.Application.Common.Mappings;
 
-public interface IMapFrom<T> : IRegister
+public interface IMapFrom<T> 
 {
-    void IRegister.Register(TypeAdapterConfig config)
+    void Mapping(TypeAdapterConfig config)
     {
         config.NewConfig(typeof(T), GetType());
     }

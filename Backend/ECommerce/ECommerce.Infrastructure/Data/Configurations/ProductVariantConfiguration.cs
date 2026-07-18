@@ -29,14 +29,6 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
             .HasForeignKey(pv => pv.ProductId)
             .OnDelete(DeleteBehavior.Cascade); 
 
-        builder.HasMany<OrderItem>()
-            .WithOne(oi => oi.ProductVariant)
-            .HasForeignKey(oi => oi.ProductVariantId)
-            .OnDelete(DeleteBehavior.Restrict); 
-
-        builder.HasMany<CartItem>()
-            .WithOne(ci => ci.ProductVariant)
-            .HasForeignKey(ci => ci.ProductVariantId)
-            .OnDelete(DeleteBehavior.Cascade); 
+        builder.HasQueryFilter(pv => !pv.IsDeleted && !pv.Product.IsDeleted);
     }
 }

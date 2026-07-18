@@ -28,10 +28,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Cascade); 
 
         builder.HasOne(o => o.Address)
-            .WithMany() 
+            .WithMany(a => a.Orders) 
             .HasForeignKey(o => o.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        
+        builder.HasQueryFilter(o => !o.Address.IsDeleted && !o.User.IsDeleted);
     }
 }

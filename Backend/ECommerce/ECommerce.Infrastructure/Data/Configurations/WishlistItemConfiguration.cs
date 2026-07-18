@@ -19,8 +19,10 @@ public class WishlistItemConfiguration : IEntityTypeConfiguration<WishlistItem>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(wi => wi.ProductVariant)
-            .WithMany(p => p.WishlistItems)
+            .WithMany(pv => pv.WishlistItems)
             .HasForeignKey(wi => wi.ProductVariantId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(wi => !wi.User.IsDeleted && !wi.ProductVariant.IsDeleted);
     }
 }

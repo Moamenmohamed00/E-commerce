@@ -33,5 +33,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .WithMany(p => p.Reviews)
             .HasForeignKey(r => r.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(r => !r.User.IsDeleted && !r.Product.IsDeleted);
     }
 }

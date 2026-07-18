@@ -11,9 +11,23 @@ public static class MappingConfig
     {
         var config = TypeAdapterConfig.GlobalSettings;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        
+        // Scan for traditional IRegister implementations
+        config.Scan(assembly);
 
-        config.Scan(Assembly.GetExecutingAssembly());
+        // Manually configure IMapFrom<> types without instantiating them
+        var types = assembly.GetExportedTypes()
+            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
+            .ToList();
 
+        foreach (var type in types)
+        {
+            var interfaceType = type.GetInterfaces().First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>));
+            var entityType = interfaceType.GetGenericArguments()[0];
+            
+            config.NewConfig(entityType, type);
+        }
         services.AddSingleton(config);
 
         services.AddScoped<IMapper, ServiceMapper>();
