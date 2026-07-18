@@ -22,11 +22,17 @@ public class DeleteReviewCommandHandler : IRequestHandler<DeleteReviewCommand, R
         if (userId == null) return Result.Failure("Unauthorized");
 
         var review = await _context.Reviews
-            .FirstOrDefaultAsync(r => r.Id == request.Id && r.UserId == userId && !r.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == request.Id && !r.IsDeleted, cancellationToken);
 
         if (review == null)
         {
-            return Result.Failure("Review not found or you do not have permission to delete it.");
+            return Result.Failure("Review not found.");
+        }
+
+        bool isAdmin = _currentUserService.Role == "Admin";
+        if (review.UserId != userId && !isAdmin)
+        {
+            return Result.Failure("You do not have permission to delete this review.");
         }
 
         review.IsDeleted = true;
